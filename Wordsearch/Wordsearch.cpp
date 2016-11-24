@@ -3,9 +3,13 @@
 #include <sstream>
 #include <vector>
 #include <time.h>
+
 using namespace std;
 
+typedef vector<vector<char>> matrix;
+
 const string LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
 
 char random_letter() {
 	int rand_num = rand() % LETTERS.size();
@@ -13,24 +17,34 @@ char random_letter() {
 }
 
 
-vector<vector<char>> random_matrix(int height, int width) {
-	srand(time(0));
-	vector<vector<char>> matrix;
+matrix create_grid(int height, int width) {
+	matrix grid;
 	for (int i = 0; i < height; i++) {
 		vector<char> row;
 		for (int j = 0; j < width; j++) {
-			row.push_back(random_letter());
+			row.push_back(' ');
 		}
-		matrix.push_back(row);
+		grid.push_back(row);
 	}
-	return matrix;
+	return grid;
 }
 
 
-void display_matrix(vector<vector<char>> matrix) {
-	for (int i = 0; i < matrix.size(); i++) {
-		for (int j = 0; j < matrix[i].size(); j++) {
-			cout << matrix[i][j] << ' ';
+matrix randomise_grid(matrix grid) {
+	srand(time(0));
+	for (int i = 0; i < grid.size(); i++) {
+		for (int j = 0; j < grid[i].size(); j++) {
+			grid[i][j] = random_letter();
+		}
+	}
+	return grid;
+}
+
+
+void display_grid(matrix grid) {
+	for (int i = 0; i < grid.size(); i++) {
+		for (int j = 0; j < grid[i].size(); j++) {
+			cout << grid[i][j] << ' ';
 		}
 		cout << endl;
 	}
@@ -52,16 +66,22 @@ vector<string> get_words() {
 	return words;
 }
 
+matrix add_words_to_grid(matrix grid, vector<string> words) {
+	return grid;
+}
+
 int main() {
 	int height, width;
 	cout << "Please enter the dimensions of the wordsearch, X and then Y" << endl;
 	cin >> height >> width;
 
-	vector<vector<char>> matrix = random_matrix(height, width);
+	matrix grid = create_grid(height, width);
+	grid = randomise_grid(grid);
 
-	display_matrix(matrix);
+	display_grid(grid);
 
 	vector<string> words = get_words();
+	grid = add_words_to_grid(grid, words);
 
 	cout << "The words you entered were:" << endl;
 	for (int i = 0; i < words.size(); i++) {
