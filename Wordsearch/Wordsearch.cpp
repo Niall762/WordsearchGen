@@ -78,14 +78,9 @@ int main() {
 	matrix grid = create_grid(height, width);
 	grid = randomise_grid(grid);
 
-	display_grid(grid);
-
 	vector<string> words = get_words();
 	grid = add_words_to_grid(grid, words);
 
-	cout << "The words you entered were:" << endl;
-	for (int i = 0; i < words.size(); i++) {
-		cout << words[i] << endl;
-	}
+	display_grid(grid);
 	return 0;
 }
