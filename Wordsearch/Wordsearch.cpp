@@ -4,6 +4,7 @@
 #include <vector>
 #include <tuple>
 #include <time.h>
+#include <locale>
 
 using namespace std;
 
@@ -11,14 +12,13 @@ typedef vector<vector<char>> matrix;
 
 const string LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-
 int rand_int(int min, int max) {
-	return rand(min % max);
+	return rand() % (max - min + 1) + min;
 }
 
 
 char random_letter() {
-	int rand_num = rand_int(LETTERS.size() - 1);
+	int rand_num = rand_int(0, LETTERS.size() - 1);
 	return LETTERS[rand_num];
 }
 
@@ -56,6 +56,16 @@ void display_grid(matrix grid) {
 }
 
 
+string to_upper(string str) {
+	string result;
+	locale loc;
+	for (int i = 0; i < str.length(); i++) {
+		result += toupper(str.at(i), loc);
+	}
+	return result;
+}
+
+
 vector<string> get_words() {
 	int num_words;
 	cout << "How many words would you like you filthy animal" << endl;
@@ -66,7 +76,7 @@ vector<string> get_words() {
 	string word;
 	for (int i = 0; i < num_words; i++) {
 		cin >> word;
-		words.push_back(word);
+		words.push_back(to_upper(word));
 	}
 	return words;
 }
@@ -76,49 +86,53 @@ tuple<int, int> random_direction() {
 	int x = 0;
 	int y = 0;
 	while (x == 0 && y == 0) {
-		x = rand_int(2) - 1;
-		y = rand_int(2) - 1;
+		x = rand_int(-1, 1);
+		y = rand_int(-1, 1);
 	}
 	return make_tuple(x, y);
 }
 
 
-matrix add_words_to_grid(matrix grid, vector<string> words, int height, int width) {
-	for (int w = 0; w < words(size); w++) {
-		word = words[i]
-			tuple<int, int> direction = random_direction();
+matrix add_words_to_grid(matrix grid, vector<string> words) {
+	int height = grid.size();
+	int width = grid[0].size();
+	for (int i = 0; i < words.size(); i++) {
+		string word = words[i];
+		tuple<int, int> direction = random_direction();
 		int x = get<0>(direction);
 		int y = get<1>(direction);
+		cout << x << ' ' << y << endl;
 
-		if (x == -1) {
-			begin_x = rand_int(width - word(size), width)
+		int begin_x;
+		int begin_y;
+		if (x == 1) {
+			begin_x = rand_int(0, width - word.size());
 		}
 		if (x == 0) {
-			begin_x = rand_int(0, width)
+			begin_x = rand_int(0, width - 1);
 		}
-		if (x == 1) {
-			begin_x = rand_int(0, width - word(size))
-		}
-		if (y == -1) {
-			begin_y = rand_int(0, height - word(size))
-		}
-		if (y == 0) {
-			begin_y = rand_int(0, height)
+		if (x == -1) {
+			begin_x = rand_int(word.size() - 1, width - 1);
 		}
 		if (y == 1) {
-			begin_y = rand_int(height - word(size), height)
+			begin_y = rand_int(0, width - word.size());
 		}
-		for (int q = 0; q < word.length(); q++){
-				grid[begin_y + (y*q)][begin_x + (x*q)] = word[q]
-			}
+		if (y == 0) {
+			begin_y = rand_int(0, width - 1);
+		}
+		if (y == -1) {
+			begin_y = rand_int(word.size() - 1, width - 1);
+		}
+		for (int j = 0; j < word.length(); j++) {
+			grid[begin_y + y * j][begin_x + x * j] = word[j];
+		}
 	}
-	
 	return grid;
 }
 
 
 int main() {
-	srand(time(0));
+	srand(time(NULL));
 	int height, width;
 	cout << "Please enter the dimensions of the wordsearch, X and then Y" << endl;
 	cin >> height >> width;
@@ -127,8 +141,7 @@ int main() {
 	grid = randomise_grid(grid);
 
 	vector<string> words = get_words();
-	grid = add_words_to_grid(grid, words, height, width);
-
+	grid = add_words_to_grid(grid, words);
 	display_grid(grid);
 	return 0;
 }
