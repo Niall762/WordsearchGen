@@ -12,8 +12,8 @@ typedef vector<vector<char>> matrix;
 const string LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 
-int rand_int(int max) {
-	return rand() % (max + 1);
+int rand_int(int min, int max) {
+	return rand(min % max);
 }
 
 
@@ -83,10 +83,36 @@ tuple<int, int> random_direction() {
 }
 
 
-matrix add_words_to_grid(matrix grid, vector<string> words) {
-	tuple<int, int> direction = random_direction();
-	int x = get<0>(direction);
-	int y = get<1>(direction);
+matrix add_words_to_grid(matrix grid, vector<string> words, int height, int width) {
+	for (int w = 0; w < words(size); w++) {
+		word = words[i]
+			tuple<int, int> direction = random_direction();
+		int x = get<0>(direction);
+		int y = get<1>(direction);
+
+		if (x == -1) {
+			begin_x = rand_int(width - word(size), width)
+		}
+		if (x == 0) {
+			begin_x = rand_int(0, width)
+		}
+		if (x == 1) {
+			begin_x = rand_int(0, width - word(size))
+		}
+		if (y == -1) {
+			begin_y = rand_int(0, height - word(size))
+		}
+		if (y == 0) {
+			begin_y = rand_int(0, height)
+		}
+		if (y == 1) {
+			begin_y = rand_int(height - word(size), height)
+		}
+		for (int q = 0; q < word.length(); q++){
+				grid[begin_y + (y*q)][begin_x + (x*q)] = word[q]
+			}
+	}
+	
 	return grid;
 }
 
@@ -101,7 +127,7 @@ int main() {
 	grid = randomise_grid(grid);
 
 	vector<string> words = get_words();
-	grid = add_words_to_grid(grid, words);
+	grid = add_words_to_grid(grid, words, height, width);
 
 	display_grid(grid);
 	return 0;
