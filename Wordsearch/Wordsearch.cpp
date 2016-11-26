@@ -12,6 +12,7 @@ typedef vector<vector<char>> matrix;
 
 const string LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
+
 int rand_int(int min, int max) {
 	return rand() % (max - min + 1) + min;
 }
@@ -101,7 +102,6 @@ matrix add_words_to_grid(matrix grid, vector<string> words) {
 		tuple<int, int> direction = random_direction();
 		int x = get<0>(direction);
 		int y = get<1>(direction);
-		cout << x << ' ' << y << endl;
 
 		int begin_x;
 		int begin_y;
@@ -123,6 +123,10 @@ matrix add_words_to_grid(matrix grid, vector<string> words) {
 		if (y == -1) {
 			begin_y = rand_int(word.size() - 1, width - 1);
 		}
+
+		cout << "Starting position: " << begin_x << ", " << begin_y << endl;
+		cout << "Direction: " << x << ' ' << y << endl;
+
 		for (int j = 0; j < word.length(); j++) {
 			grid[begin_y + y * j][begin_x + x * j] = word[j];
 		}
