@@ -40,7 +40,9 @@ matrix create_grid(int height, int width) {
 matrix randomise_grid(matrix grid) {
 	for (int i = 0; i < grid.size(); i++) {
 		for (int j = 0; j < grid[i].size(); j++) {
-			grid[i][j] = random_letter();
+			if (grid[i][j] == ' ') {
+				grid[i][j] = random_letter();
+			}
 		}
 	}
 	return grid;
@@ -94,41 +96,85 @@ tuple<int, int> random_direction() {
 }
 
 
+tuple<int, int> get_start_coords(int height, int width, int word_size, tuple<int, int> direction) {
+	int x = get<0>(direction);
+	int y = get<1>(direction);
+	int begin_x;
+	int begin_y;
+	if (x == 1) {
+		begin_x = rand_int(0, width - word_size);
+	}
+	if (x == 0) {
+		begin_x = rand_int(0, width - 1);
+	}
+	if (x == -1) {
+		begin_x = rand_int(word_size - 1, width - 1);
+	}
+	if (y == 1) {
+		begin_y = rand_int(0, height - word_size);
+	}
+	if (y == 0) {
+		begin_y = rand_int(0, height - 1);
+	}
+	if (y == -1) {
+		begin_y = rand_int(word_size - 1, height - 1);
+	}
+	return make_tuple(begin_x, begin_y);
+}
+
+
+bool check_word_fits(string word, matrix grid, tuple<int, int> start_coords, tuple<int, int> direction) {
+	int x = get<0>(direction);
+	int y = get<1>(direction);
+	int begin_x = get<0>(start_coords);
+	int begin_y = get<1>(start_coords);
+
+	for (int j = 0; j < word.length(); j++) {
+		char grid_letter = grid[begin_y + y * j][begin_x + x * j];
+		char word_letter = word[j];
+		if (grid_letter != word_letter && grid_letter != ' ') {
+			return false;
+		}
+	}
+	return true;
+}
+
+
+matrix add_word_to_grid(string word, matrix grid, tuple<int, int> start_coords, tuple<int, int> direction) {
+	int x = get<0>(direction);
+	int y = get<1>(direction);
+	int begin_x = get<0>(start_coords);
+	int begin_y = get<1>(start_coords);
+
+	for (int j = 0; j < word.length(); j++) {
+		grid[begin_y + y * j][begin_x + x * j] = word[j];
+	}
+	//cout << "Starting position: " << begin_x << ", " << begin_y << endl;
+	//cout << "Direction: " << x << ' ' << y << endl;
+	return grid;
+}
+
+
+
 matrix add_words_to_grid(matrix grid, vector<string> words) {
 	int height = grid.size();
 	int width = grid[0].size();
 	for (int i = 0; i < words.size(); i++) {
 		string word = words[i];
-		tuple<int, int> direction = random_direction();
-		int x = get<0>(direction);
-		int y = get<1>(direction);
 
-		int begin_x;
-		int begin_y;
-		if (x == 1) {
-			begin_x = rand_int(0, width - word.size());
+		tuple<int, int> direction;
+		tuple<int, int> start_coords;
+		bool word_clear;
+		int max_retries = 5;
+		for (int i = 0; i < max_retries; i++) {
+			direction = random_direction();
+			start_coords = get_start_coords(height, width, word.size(), direction);
+			word_clear = check_word_fits(word, grid, start_coords, direction);
 		}
-		if (x == 0) {
-			begin_x = rand_int(0, width - 1);
-		}
-		if (x == -1) {
-			begin_x = rand_int(word.size() - 1, width - 1);
-		}
-		if (y == 1) {
-			begin_y = rand_int(0, width - word.size());
-		}
-		if (y == 0) {
-			begin_y = rand_int(0, width - 1);
-		}
-		if (y == -1) {
-			begin_y = rand_int(word.size() - 1, width - 1);
-		}
-
-		cout << "Starting position: " << begin_x << ", " << begin_y << endl;
-		cout << "Direction: " << x << ' ' << y << endl;
-
-		for (int j = 0; j < word.length(); j++) {
-			grid[begin_y + y * j][begin_x + x * j] = word[j];
+		if (word_clear) {
+			grid = add_word_to_grid(word, grid, start_coords, direction);
+		} else {
+			cout << "Could not place word: " << word << endl;
 		}
 	}
 	return grid;
@@ -136,16 +182,16 @@ matrix add_words_to_grid(matrix grid, vector<string> words) {
 
 
 int main() {
-	srand(time(NULL));
+	srand(time(NULL)); // Seeds the random number generator
 	int height, width;
 	cout << "Please enter the dimensions of the wordsearch, X and then Y" << endl;
 	cin >> height >> width;
 
 	matrix grid = create_grid(height, width);
-	grid = randomise_grid(grid);
-
 	vector<string> words = get_words();
 	grid = add_words_to_grid(grid, words);
+	grid = randomise_grid(grid);
+
 	display_grid(grid);
 	return 0;
 }
