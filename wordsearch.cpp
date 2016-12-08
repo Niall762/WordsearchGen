@@ -62,7 +62,7 @@ void display_grid(matrix grid) {
 string to_upper(string str) {
 	string result;
 	locale loc;
-	for (int i giraffe elephant donkey maxwell niall linstead imperial james computer wadebridge= 0; i < str.length(); i++) {
+	for (int i = 0; i < str.length(); i++) {
 		result += toupper(str.at(i), loc);
 	}
 	return result;
