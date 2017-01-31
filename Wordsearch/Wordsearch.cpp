@@ -1,10 +1,11 @@
-#include "stdafx.h"
+#include <stdafx.h>
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include <tuple>
+#include <utility>
 #include <time.h>
 #include <locale>
+#include <cstdlib>
 
 using namespace std;
 
@@ -71,7 +72,7 @@ string to_upper(string str) {
 
 vector<string> get_words() {
 	int num_words;
-	cout << "How many words would you like you filthy animal" << endl;
+	cout << "How many words would you like?" << endl;
 	cin >> num_words;
 
 	vector<string> words;
@@ -85,18 +86,18 @@ vector<string> get_words() {
 }
 
 
-tuple<int, int> random_direction() {
+pair<int, int> random_direction() {
 	int x = 0;
 	int y = 0;
 	while (x == 0 && y == 0) {
 		x = rand_int(-1, 1);
 		y = rand_int(-1, 1);
 	}
-	return make_tuple(x, y);
+	return make_pair(x, y);
 }
 
 
-tuple<int, int> get_start_coords(int height, int width, int word_size, tuple<int, int> direction) {
+pair<int, int> get_start_coords(int height, int width, int word_size, pair<int, int> direction) {
 	int x = get<0>(direction);
 	int y = get<1>(direction);
 	int begin_x;
@@ -119,11 +120,11 @@ tuple<int, int> get_start_coords(int height, int width, int word_size, tuple<int
 	if (y == -1) {
 		begin_y = rand_int(word_size - 1, height - 1);
 	}
-	return make_tuple(begin_x, begin_y);
+	return make_pair(begin_x, begin_y);
 }
 
 
-bool check_word_fits(string word, matrix grid, tuple<int, int> start_coords, tuple<int, int> direction) {
+bool check_word_fits(string word, matrix grid, pair<int, int> start_coords, pair<int, int> direction) {
 	int x = get<0>(direction);
 	int y = get<1>(direction);
 	int begin_x = get<0>(start_coords);
@@ -140,7 +141,7 @@ bool check_word_fits(string word, matrix grid, tuple<int, int> start_coords, tup
 }
 
 
-matrix add_word_to_grid(string word, matrix grid, tuple<int, int> start_coords, tuple<int, int> direction) {
+matrix add_word_to_grid(string word, matrix grid, pair<int, int> start_coords, pair<int, int> direction) {
 	int x = get<0>(direction);
 	int y = get<1>(direction);
 	int begin_x = get<0>(start_coords);
@@ -162,18 +163,22 @@ matrix add_words_to_grid(matrix grid, vector<string> words) {
 	for (int i = 0; i < words.size(); i++) {
 		string word = words[i];
 
-		tuple<int, int> direction;
-		tuple<int, int> start_coords;
+		pair<int, int> direction;
+		pair<int, int> start_coords;
 		bool word_clear;
-		int max_retries = 5;
+		int max_retries = 50;
 		for (int i = 0; i < max_retries; i++) {
 			direction = random_direction();
 			start_coords = get_start_coords(height, width, word.size(), direction);
 			word_clear = check_word_fits(word, grid, start_coords, direction);
+			if (word_clear) {
+				break;
+			}
 		}
 		if (word_clear) {
 			grid = add_word_to_grid(word, grid, start_coords, direction);
-		} else {
+		}
+		else {
 			cout << "Could not place word: " << word << endl;
 		}
 	}
@@ -193,5 +198,6 @@ int main() {
 	grid = randomise_grid(grid);
 
 	display_grid(grid);
+	system("PAUSE");
 	return 0;
 }
